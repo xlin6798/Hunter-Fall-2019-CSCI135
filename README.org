@@ -1,4 +1,4 @@
-* Fall 2019 - Project 1
+* Fall 2019 - CSCI135 (Instructor: Genady Maryash)
 
 * Name: Xinyi Lin
 
