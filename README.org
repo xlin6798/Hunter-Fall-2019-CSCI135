@@ -1,4 +1,4 @@
-* Fall 2019 - Lab 01
+* Fall 2019 - Project 1
 
 * Name: Xinyi Lin
 
@@ -9,17 +9,4 @@
 * File structure:
  - 
 
-* General instructions:
-- Fill in your name and GitHub username on top.
-- Use the Notes section to add any notes to the instructor.
-- The main lab description can be found here:
-  https://maryash.github.io/135/labs/lab_01.html please note the
-  changes in order to complete the lab.
 
-* Daedalus specific instructions:
-
-Instead of using GradeScope you will use GitHub classroom. For tasks A
-through D, add the source files (smaller.cpp, smaller3.cpp, leap.cpp,
-and month.cpp) to this repo. Then commit and push them.
-
-DO NOT SUBMIT them to Gradescope.
