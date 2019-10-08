@@ -1,0 +1,10 @@
+* Fall 2019 - CSCI135 Project 1 133
+
+* Name: Xinyi Lin
+
+* GitHub username: xlin6798
+
+* Notes:
+
+* File structure:
+ - 
