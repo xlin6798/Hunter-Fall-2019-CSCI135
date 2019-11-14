@@ -11,13 +11,17 @@ The program below reads a word and implements a linguistic application that uses
 #include <fstream>
 #include <cstdlib>
 #include <climits>
-#include <vector>
+#include <cctype> 
+#include <string>
 
 void splitOnSpace(std::string, std::string&, std::string&);
 
 bool ignoreOr(std::string);
 bool spaceExist(std::string);
-bool compareTwoVectors(std::vector<std::string>, std::vector<std::string>);
+bool compareTwoArray(std::string*, int, std::string*, int);
+
+
+int countLength(std::string);
 
 std::string addPhoneme(std::string);
 std::string toUpperCase(std::string);
@@ -25,7 +29,7 @@ std::string removePhoneme(std::string);
 std::string replacePhoneme(std::string);
 std::string findPronounciation(std::string);
 std::string findIdentical(std::string, std::string);
-std::vector<std::string> splitIntoVector(std::string);
+std::string* splitIntoArray(std::string);
 
 int main()
 {
@@ -133,7 +137,8 @@ std::string replacePhoneme(std::string pro)
     getline(fin, junk);
   }
 
-  std::vector<std::string> strs1 = splitIntoVector(pro.substr(1, pro.length() - 1));  //splits into vector by space
+  std::string* strs1 = splitIntoArray(pro.substr(1, pro.length() - 1));
+  int strs1len = countLength(pro.substr(1, pro.length() - 1));
   std::string line;
   while (getline(fin, line)){ 
     std::string before;
@@ -141,9 +146,10 @@ std::string replacePhoneme(std::string pro)
     splitOnSpace(line, before, after);
     if (!ignoreOr(before))
       continue;
-    std::vector<std::string> strs2 = splitIntoVector(after.substr(1, after.length() - 1));  //splits into vector by space
-    if (strs1.size() == strs2.size()){
-      if (compareTwoVectors(strs1, strs2))
+    std::string* strs2 = splitIntoArray(after.substr(1, after.length() - 1));
+    int strs2len = countLength(after.substr(1, after.length() - 1));
+    if (strs1len == strs2len){  //if strs1 has exactly one less element than strs2
+      if (compareTwoArray(strs2, strs2len, strs1, strs1len))  //compare the two arrays, strs2 is first argument because its size is larger
 	ret += before + " ";
     } 
   }
@@ -167,7 +173,8 @@ std::string addPhoneme(std::string pro)
     getline(fin, junk);
   }
 
-  std::vector<std::string> strs1 = splitIntoVector(pro.substr(1, pro.length() - 1));
+  std::string* strs1 = splitIntoArray(pro.substr(1, pro.length() - 1));
+  int strs1len = countLength(pro.substr(1, pro.length() - 1));
   std::string line;
   while (getline(fin, line)){ 
     std::string before;
@@ -175,9 +182,10 @@ std::string addPhoneme(std::string pro)
     splitOnSpace(line, before, after);
     if (!ignoreOr(before))
       continue;
-    std::vector<std::string> strs2 = splitIntoVector(after.substr(1, after.length() - 1));
-    if (strs1.size() == strs2.size() - 1){  //if strs1 has exactly one less element than strs2
-      if (compareTwoVectors(strs2, strs1))  //compare the two vectors, strs2 is first argument because its size is larger
+    std::string* strs2 = splitIntoArray(after.substr(1, after.length() - 1));
+    int strs2len = countLength(after.substr(1, after.length() - 1));
+    if (strs1len == strs2len - 1){  //if strs1 has exactly one less element than strs2
+      if (compareTwoArray(strs2, strs2len, strs1, strs1len))  //compare the two arrays, strs2 is first argument because its size is larger
 	ret += before + " ";
     } 
   }
@@ -201,7 +209,8 @@ std::string removePhoneme(std::string pro)
     getline(fin, junk);
   }
 
-  std::vector<std::string> strs1 = splitIntoVector(pro.substr(1, pro.length() - 1));
+  std::string* strs1 = splitIntoArray(pro.substr(1, pro.length() - 1));
+  int strs1len = countLength(pro.substr(1, pro.length() - 1));
   std::string line;
   while (getline(fin, line)){ 
     std::string before;
@@ -209,9 +218,10 @@ std::string removePhoneme(std::string pro)
     splitOnSpace(line, before, after);
     if (!ignoreOr(before))
       continue;
-    std::vector<std::string> strs2 = splitIntoVector(after.substr(1, after.length() - 1));
-    if (strs1.size() == strs2.size() + 1){  //if strs1 has exactly one more element than strs2
-      if (compareTwoVectors(strs1, strs2))  //compare the two vectors, strs1 is first argument because its size is larger
+    std::string* strs2 = splitIntoArray(after.substr(1, after.length() - 1));
+    int strs2len = countLength(after.substr(1, after.length() - 1));
+    if (strs1len == strs2len + 1){  //if strs1 has exactly one less element than strs2
+      if (compareTwoArray(strs1, strs1len, strs2, strs2len))  //compare the two arrays, strs2 is first argument because its size is larger
 	ret += before + " ";
     } 
   }
@@ -227,7 +237,7 @@ void splitOnSpace(std::string s, std::string & before, std::string & after) {
     after = "";
   // accumulate before space
     int i = 0;
-    while (i < s.size() && not isspace(s[i])) { 
+    while (i < s.length() && not isspace(s[i])) { 
         before = before + s[i]; 
         i++; 
     }
@@ -248,17 +258,30 @@ std::string toUpperCase(std::string str)  //returns a word in all uppercase lett
   return ret;
 }
 
-std::vector<std::string> splitIntoVector(std::string str)
+int countLength(std::string str)
 {
-  std::vector<std::string> strs;
+  int count = 0;
+  for (int i = 0; i < str.length(); i++) {
+    if (isspace(str.at(i)))
+      count ++;
+  }
+  return count + 1;
+}
+
+std::string* splitIntoArray(std::string str)
+{
+  int strLen = countLength(str);
+  std::string* strs = new std::string[strLen];
   std::string before;  //words
   std::string after;  //phoneme
+  int i = 0;
   while (spaceExist(str)){  
     splitOnSpace(str, before, after);
     str = after;
-    strs.push_back(before);
+    strs[i] = before;
+    i++;
   }
-  strs.push_back(after);
+  strs[i] = after;
   return strs;
 }
 
@@ -270,22 +293,23 @@ bool spaceExist(std::string str)  //checks if there is space in a string
   return false;
 }
 
-bool compareTwoVectors(std::vector<std::string> strs1, std::vector<std::string> strs2)  //compares two vectors based on conditions
+bool compareTwoArray(std::string strs1[], int strs1len, std::string strs2[], int strs2len)  //compares two strings based on conditions
 {
   int i = 0;
-  if (strs1.size() == strs2.size()){  //checks if all elements match but one, in the same order
-    for (int x = 0; x < strs1.size(); x++){
-      if (strs1.at(x).compare(strs2.at(x)) == 0)
+  strs1[1];
+  if (strs1len == strs2len){  //checks if all elements match but one, in the same order
+    for (int x = 0; x < strs1len; x++){
+      if (strs1[x].compare(strs2[x]) == 0)
 	i++;
     }
-    if (i == strs1.size() - 1)
+    if (i == strs1len - 1)
       return true;
   }
-  else if (strs1.size() == strs2.size() + 1){  //checks if strs1 has all elements from strs2, in the same order, but this time strs1 has exactly one element more than strs2
-    for (int x = 0; x <strs1.size(); x++){
-      if (strs1.at(x).compare(strs2.at(i)) == 0)
+  else if (strs1len == strs2len + 1){  //checks if strs1 has all elements from strs2, in the same order, but this time strs1 has exactly one element more than strs2
+    for (int x = 0; x <strs1len; x++){
+      if (strs1[x].compare(strs2[i]) == 0)
 	i++;
-      if (i == strs2.size())
+      if (i == strs2len)
 	return true;
     }
   }
